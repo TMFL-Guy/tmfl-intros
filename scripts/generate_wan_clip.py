@@ -12,7 +12,7 @@ import time
 from urllib.parse import urlparse
 
 import requests
-from PIL import Image
+from PIL import Image, ImageFilter
 
 BASE = "https://cbensimon-wan2-2-fp8da-aoti-preview2.hf.space"
 FN = "generate_video"
@@ -57,7 +57,14 @@ def prepare_image():
         # Lower source resolution reduces memory use on the free shared GPU.
         max_width = int(os.environ.get("MAX_INPUT_WIDTH", "832"))
         max_height = int(os.environ.get("MAX_INPUT_HEIGHT", "480"))
-        rgb.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
+        frame_w, frame_h = 832, 468
+        scale = max(frame_w / rgb.width, frame_h / rgb.height)
+        bg = rgb.resize((round(rgb.width * scale), round(rgb.height * scale)), Image.Resampling.LANCZOS)
+        x, y = (bg.width-frame_w)//2, (bg.height-frame_h)//2
+        bg = bg.crop((x,y,x+frame_w,y+frame_h)).filter(ImageFilter.GaussianBlur(24))
+        rgb.thumbnail((frame_w,frame_h), Image.Resampling.LANCZOS)
+        bg.paste(rgb, ((frame_w-rgb.width)//2,(frame_h-rgb.height)//2))
+        rgb = bg
         rgb.save(target, "PNG", optimize=True)
         print(f"Prepared video source: {rgb.width}x{rgb.height}", flush=True)
     if target.stat().st_size > 8 * 1024 * 1024:
@@ -137,6 +144,11 @@ def main():
             raise RuntimeError("Upstream returned a file that is not a valid MP4 container.")
         output = OUT / "tmfl-stadium-awakens.mp4"
         output.write_bytes(r.content)
+        import subprocess
+        landscape = OUT / "tmfl-stadium-awakens-landscape.mp4"
+        subprocess.run(["ffmpeg","-y","-i",str(output),"-vf","scale=832:468:force_original_aspect_ratio=decrease,pad=832:468:(ow-iw)/2:(oh-ih)/2,setsar=1","-an","-c:v","libx264","-pix_fmt","yuv420p",str(landscape)],check=True)
+        output.unlink()
+        output = landscape
         (OUT / "status.txt").write_text(f"SUCCESS: {output.name} ({len(r.content)} bytes)\n")
         print(f"SUCCESS: {output} ({len(r.content)} bytes)", flush=True)
     except Exception as exc:
