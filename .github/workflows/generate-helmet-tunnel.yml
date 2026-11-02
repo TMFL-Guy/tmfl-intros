@@ -1,16 +1,10 @@
-name: Generate TMFL Helmet Tunnel CGI
+name: Generate TMFL Helmet Tunnel - Authentic Teams
 on:
   workflow_dispatch:
-    inputs:
-      scene_duration:
-        description: 'Clip duration in seconds (0.5 to 4.5)'
-        required: true
-        default: '3.5'
-        type: string
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     permissions:
       contents: read
     steps:
@@ -18,20 +12,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Install rendering tools
         run: |
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Generate continuous helmet flythrough and TMFL logo zoom
-        env:
-          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/eb2349dc-39dc-4d7d-94b9-369cd475fef5.png
-          INPUT_DURATION: ${{ inputs.scene_duration }}
-          INPUT_PROMPT: 'One continuous seamless high-budget Sunday night football television CGI camera move, landscape 16:9. Begin wide at the entrance to this exact football helmet tunnel. Camera flies smoothly and quickly straight forward down the central aisle, passing the rows of stationary team helmets on both sides. Strong realistic forward parallax, increasingly rapid movement, reflections streak on glossy floor, red blue and white lights sweep past. Then camera accelerates toward the exact original diamond TMFL logo centered at the end and dramatically zooms into it until the TMFL logo fills the entire frame. Preserve the existing helmets and original TMFL emblem exactly; do not invent or alter logos, no cuts, no added text, no people, silent video.'
-          MAX_INPUT_WIDTH: '832'
-          MAX_INPUT_HEIGHT: '468'
-        run: python scripts/generate_wan_clip.py
-      - name: Upload CGI video
+      - name: Render actual helmet images and exact official logo
+        run: python scripts/render_authentic_helmets.py
+      - name: Upload rendered MP4 or missing-asset report
         if: always()
         uses: actions/upload-artifact@v4
         with:
