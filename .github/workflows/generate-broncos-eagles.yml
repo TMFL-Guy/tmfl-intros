@@ -25,7 +25,7 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Animate Broncos vs Eagles showdown
         env:
-          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/6f16fbde-3fcb-4442-8ec9-8a729298af9b.png
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/a_highly_detailed_cinematic_3d_toy_lego_style_sta.png
           INPUT_DURATION: ${{ inputs.scene_duration }}
           INPUT_PROMPT: 'Single continuous cinematic 16:9 low-angle tracking shot of exactly five Denver Broncos miniature TeenyMates football players on the left, wearing jersey numbers 2 Patrick Surtain II, 7 John Elway, 10 Bo Nix, 24 Champ Bailey and 80 Rod Smith, walking slowly toward exactly seven Philadelphia Eagles miniature players on the right, wearing jersey numbers 1 Jalen Hurts, 5 Donovan McNabb, 6 DeVonta Smith, 12 Randall Cunningham, 26 Saquon Barkley, 33 Cooper DeJean and 92 Reggie White. Keep the exact 12 reference figures and their formation, correct jersey numbers and team colors. Team helmet logos must appear on the SIDES only, never on the helmet fronts. Both squads advance in small natural toy-like steps toward midfield but do not collide. The camera slowly pushes forward at turf level as low fog rolls past their feet. Preserve every element of the reference handmade cardboard TeenyMates Standing Board Stadium, the asymmetrical bleachers, spectator toys, signs, centered goalpost, floodlights, field markings and moonlit sky. Dramatic rim lighting and realistic miniature materials. No extra players, no duplicated figures, no altered numbers, no morphing, no new stadium structures, no cuts, no additional text, no sound.'
         run: python scripts/generate_wan_clip.py
