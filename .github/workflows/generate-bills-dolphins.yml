@@ -1,0 +1,41 @@
+name: Generate TMFL Bills vs Dolphins CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.0'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate Bills vs Dolphins showdown
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/642adb78-d010-4ed0-873a-f14f4493bfe5.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous cinematic 16:9 miniature TeenyMates football showdown. Buffalo Bills on left advancing toward Miami Dolphins on right at the 50-yard line. Official TMFL Buffalo roster exactly four players: Jim Kelly number 12, Stefon Diggs number 14, Josh Allen number 17, Bruce Smith number 78. Official TMFL Miami roster exactly five players: Tua Tagovailoa number 1, Tyreek Hill number 10, Dan Marino number 13, DeVon Achane number 28, Jason Taylor number 99. These are the required figures and numbers, not alternate real-life NFL rosters. Side helmet logos only, no logos on fronts. Both squads walk forward in slow natural toy-sized steps; no collisions. Low field-level camera pushes gently forward, fog rolling over turf, moonlit clouds and stadium floodlights shimmering. Preserve handmade asymmetrical cardboard TeenyMates Standing Board Stadium, goalpost, spectators, signs and field markings exactly as the source image. No invented players, no duplicates, no cuts, no extra text, no sound.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload Bills Dolphins CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Bills-Dolphins-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
