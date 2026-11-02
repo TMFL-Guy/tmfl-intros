@@ -1,0 +1,41 @@
+name: Generate TMFL Scene 4 - One on One
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: 'Clip duration in seconds (0.5 to 4.5)'
+        required: true
+        default: '3.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate Chiefs versus Ravens TeenyMates
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/aaac2482-1141-4e8b-a27e-b0be87b0b384.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous high-end sports broadcast CGI shot, 16:9 landscape, in the exact miniature cardboard TeenyMates stadium pictured. ONLY TWO figures on the playing field: Kansas City Chiefs red #15 on the left holding a football and Baltimore Ravens purple #8 on the right with dark brown skin. Camera starts low and pushes forward gently toward the two opponents; the Chiefs player adjusts grip on football, the Ravens defender shifts his stance, and the two lean toward one another for a dramatic one-versus-one showdown. Stadium floodlights shimmer subtly, dramatic red and purple rim lighting, shallow depth of field. Preserve original exact cardboard stands, audience figures, signage, white goalpost, helmet designs, skin tones, jerseys, and composition. Do not create additional field players, no new logos, no scene cuts, no subtitles, silent video.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload CGI video or failure status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Scene-4-One-on-One-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
