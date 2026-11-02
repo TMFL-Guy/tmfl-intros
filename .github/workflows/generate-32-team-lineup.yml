@@ -1,0 +1,41 @@
+name: Generate TMFL 32-Team Lineup CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '3.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate the 32-team lineup
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/0973b40e-b197-46b6-b805-13655d7143a3.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous 16:9 cinematic night-time sports broadcast shot of this exact 32-team TeenyMates football player lineup, staggered rows behind one another at midfield in the original cardboard stadium. Camera begins low at the 50-yard line and slowly dollies forward toward the front row, with subtle realistic parallax and depth of field. All 32 miniature players remain standing in their exact positions facing the camera; tiny natural head and body motions only, no walking, no changing teams or jersey numbers. Football helmet logos belong ONLY on the LEFT and RIGHT SIDES of the helmets, NEVER on the front, forehead, or facemask. Preserve each helmet shell, side logo, uniform, jersey number, player skin tone, crowd figures, cardboard stands, goalpost, and stadium signs. Stadium floodlights brighten subtly, red and blue edge lights shimmer, moonlit clouds drift slowly. No additional players, no missing players, no duplicate figures, no camera cuts, no added text, silent video.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-32-Team-Lineup-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
