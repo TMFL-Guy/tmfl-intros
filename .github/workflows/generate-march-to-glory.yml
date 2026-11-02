@@ -25,7 +25,7 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Animate the championship march
         env:
-          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/68c14ff1-81a5-433f-a47b-020dfea30ffd.png
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/52341b0c-4373-4652-b896-b464cac096d3.png
           INPUT_DURATION: ${{ inputs.scene_duration }}
           INPUT_PROMPT: 'Single continuous cinematic 16:9 slow-motion shot, seen from behind, of the exact 32 miniature TeenyMates football players shown in this reference image marching forward together toward the small silver Stanley Cup championship trophy in the distance. Keep exactly the same 32 figures, team uniforms, helmet side logos and jersey numbers, and their staggered formation. Their legs and arms move naturally in synchronized forward steps while the camera tracks slowly behind at low turf level. The small Stanley Cup remains centered on its platform and must not grow or change shape. Preserve the original handmade cardboard TeenyMates Standing Board Stadium, spectator figures, signs, floodlight towers, field markings and moonlit sky. Dense low fog drifts around their feet; powerful white spotlights and silver trophy reflections intensify subtly as they advance. Epic championship atmosphere, physical miniature scale, photorealistic toy cinematography. No added players, no duplicate teams, no morphing, no new structures, no helmet logos on the front, no scene cuts, no added text, no sound.'
         run: python scripts/generate_wan_clip.py
