@@ -1,10 +1,16 @@
-name: Generate TMFL Helmet Tunnel - Authentic Teams
+name: Generate TMFL Helmet Tunnel CGI
 on:
   workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '3.5'
+        type: string
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -12,14 +18,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install rendering tools
+      - name: Install dependencies
         run: |
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Render actual helmet images and exact official logo
-        run: python scripts/render_authentic_helmets.py
-      - name: Upload rendered MP4 or missing-asset report
+      - name: Generate helmet tunnel flythrough
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/95b39ebc-1726-484d-909b-8f2de4c0835f.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'One continuous seamless cinematic sports broadcast shot in landscape 16:9. Camera starts at entrance and flies forward down the central aisle between the two rows of football helmets, with helmets stationary on shelves and strong forward parallax. Dramatic red white and blue stadium lighting streaks along the reflective floor. Camera accelerates and zooms directly into the existing exact red white and blue diamond TMFL logo on the far wall until it fills the entire frame. Keep the image composition and existing helmet and TMFL markings unchanged. No cuts, no new helmets, no new text, no people, silent.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload rendered MP4 or status
         if: always()
         uses: actions/upload-artifact@v4
         with:
