@@ -1,0 +1,41 @@
+name: Generate TMFL Ultimate Prize CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.0'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate the championship trophy reveal
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/4f90a7de-d3c6-403b-a2b6-417160e4d1ab.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous cinematic 16:9 shot of the exact small reflective silver Stanley Cup style trophy in the reference image standing alone on the miniature football field. Camera starts at low turf level and slowly pushes forward toward the trophy with subtle cinematic parallax and shallow depth of field. The trophy stays perfectly still and retains its exact bowl, neck, stacked rings, engraved surfaces and scale. Preserve the original handmade cardboard TeenyMates Standing Board Stadium exactly as shown: three distinct sections of bleachers and the right-side stand, cardboard walls, all spectator figures and colorful plush figures, goalpost, entrances, signs, floodlight panels and field lines. No redesign or movement of stadium components. Fog drifts gently across the turf and bright stadium lights shimmer softly in the trophy reflections. Moody night sky. No football players marching in foreground, no added props, no camera cuts, no new text, no sound.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload trophy CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Ultimate-Prize-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
