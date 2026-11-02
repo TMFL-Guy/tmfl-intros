@@ -1,0 +1,40 @@
+name: Generate TMFL Stadium Awakens CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: 'Clip duration in seconds (0.5 to 4.5)'
+        required: true
+        default: '3.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install requests pillow
+      - name: Generate cinematic stadium scene
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/4f75471f-5650-493c-a297-070b9cc95d3f.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'High-end professional Sunday night American football broadcast intro, cinematic smooth camera dolly forward toward the miniature TeenyMates stadium stands, subtle realistic parallax and dramatic moonlit cloud movement, mounted stadium light arrays glow and brighten gently, slight crowd energy and reflections, richly detailed stadium preserved exactly as pictured, keep all stands and figures and goalpost in place, no new objects, no text overlays, no logos appearing, stable architecture, cinematic realistic CGI motion, silent video.'
+          MAX_INPUT_WIDTH: '832'
+          MAX_INPUT_HEIGHT: '480'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload rendered MP4 or failure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Stadium-Awakens-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
