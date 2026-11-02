@@ -1,0 +1,41 @@
+name: Generate TMFL March to Glory CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate the championship march
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/68c14ff1-81a5-433f-a47b-020dfea30ffd.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous cinematic 16:9 slow-motion shot, seen from behind, of the exact 32 miniature TeenyMates football players shown in this reference image marching forward together toward the small silver Stanley Cup championship trophy in the distance. Keep exactly the same 32 figures, team uniforms, helmet side logos and jersey numbers, and their staggered formation. Their legs and arms move naturally in synchronized forward steps while the camera tracks slowly behind at low turf level. The small Stanley Cup remains centered on its platform and must not grow or change shape. Preserve the original handmade cardboard TeenyMates Standing Board Stadium, spectator figures, signs, floodlight towers, field markings and moonlit sky. Dense low fog drifts around their feet; powerful white spotlights and silver trophy reflections intensify subtly as they advance. Epic championship atmosphere, physical miniature scale, photorealistic toy cinematography. No added players, no duplicate teams, no morphing, no new structures, no helmet logos on the front, no scene cuts, no added text, no sound.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload March to Glory CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-March-to-Glory-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
