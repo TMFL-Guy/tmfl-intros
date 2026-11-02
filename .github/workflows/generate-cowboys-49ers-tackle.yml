@@ -1,0 +1,41 @@
+name: Generate TMFL 49ers Cowboys Tackle CGI
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '3.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate the one on one tackle
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/b05608e4-5691-4a41-a245-08a81644e8df.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'One continuous fast-paced cinematic 16:9 close-up of a one-on-one American football tackle using exactly the two foreground TeenyMates players in the reference image. San Francisco 49ers offensive ball carrier Christian McCaffrey number 23 holds the football securely and tries to drive forward; Dallas Cowboys defender Micah Parsons number 11 wraps his arms around McCaffrey and completes a realistic controlled tackle. Begin with active forward momentum and finish with the players lowering toward the turf. Exactly TWO players on the playing field, one 49er and one Cowboy. No other active players or duplicates. Keep both jersey numbers, helmet side logos, uniforms, physical toy proportions and the football consistent throughout. Preserve the original handmade asymmetrical cardboard TeenyMates Standing Board Stadium, goalpost, spectator figures, signs and floodlights as shown in the source reference. Low turf-level tracking camera, fast action, subtle turf spray, cinematic lighting. No cuts, no added text, no sound, no morphing, no extra players.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload Scene 10 MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-49ers-Cowboys-Tackle-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
