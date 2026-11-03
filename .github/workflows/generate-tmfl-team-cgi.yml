@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 7
       matrix:
         include:
           - team: Buffalo Bills
@@ -29,6 +29,15 @@ jobs:
           - team: New York Jets
             file: jets.png
             id: jets
+          - team: Cincinnati Bengals
+            file: bengals.png
+            id: bengals
+          - team: Cleveland Browns
+            file: browns.png
+            id: browns
+          - team: Pittsburgh Steelers
+            file: steelers.png
+            id: steelers
     permissions:
       contents: read
     steps:
@@ -57,6 +66,15 @@ jobs:
               ;;
             "New England Patriots")
               prompt="Epic cinematic 16:9 Patriots colonial battlefield CGI. Preserve flags, fort, cannon, lantern and ghostly silhouettes. Camera creeps past the lantern toward the fort, fog rolls over ground, banners flutter, torches flicker. No combat or weapon discharge. Preserve logos."
+              ;;
+            "Cincinnati Bengals")
+              prompt="Epic cinematic 16:9 Cincinnati Bengals CGI. Preserve the source composition with the Bengal tiger, Cincinnati skyline, Roebling bridge, orange-black branding and title. Slow cinematic camera slide and push; tiger snarls subtly, fur shifts in wind, glowing city reflections ripple and atmospheric smoke drifts. Preserve accurate logo and lettering, no new animals or morphing."
+              ;;
+            "Cleveland Browns")
+              prompt="Epic cinematic 16:9 Cleveland Browns CGI. Preserve the furious bulldog with its metal spiked collar and the wooden DAWG POUND fence. The bulldog snarls, chest rises, head subtly lunges toward camera while thick white and orange paint visibly drips downward from the DAWG POUND letters along the wood planks. Low camera push, sparks and orange stadium light flicker. Keep text legible, no added dogs or distorted anatomy."
+              ;;
+            "Pittsburgh Steelers")
+              prompt="Epic cinematic 16:9 Pittsburgh Steelers CGI. Preserve Steelers helmet in foreground, Pittsburgh skyline, yellow bridges, industrial steel beams and metallic STEELERS lettering. Camera glides slowly past the rain-speckled helmet; hot steel sparks fall from the overhead girders, golden light pulses across wet rivets, reflections shimmer in the river. Keep logos and typography unchanged; no new players or helmets."
               ;;
             "New York Jets")
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
