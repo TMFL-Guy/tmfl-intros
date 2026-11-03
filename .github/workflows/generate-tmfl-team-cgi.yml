@@ -30,7 +30,7 @@ jobs:
             file: jets.png
             id: jets
           - team: Cincinnati Bengals
-            file: bengals.png
+            file: ../bengals.png
             id: bengals
           - team: Cleveland Browns
             file: browns.png
