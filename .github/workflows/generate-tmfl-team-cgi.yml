@@ -80,7 +80,7 @@ jobs:
               prompt="Epic cinematic 16:9 Patriots colonial battlefield CGI. Preserve flags, fort, cannon, lantern and ghostly silhouettes. Camera creeps past the lantern toward the fort, fog rolls over ground, banners flutter, torches flicker. No combat or weapon discharge. Preserve logos."
               ;;
             "Cincinnati Bengals")
-              prompt="Epic cinematic 16:9 Cincinnati Bengals CGI. Preserve the source composition with the Bengal tiger, Cincinnati skyline, Roebling bridge, orange-black branding and title. Slow cinematic camera slide and push; tiger snarls subtly, fur shifts in wind, glowing city reflections ripple and atmospheric smoke drifts. Preserve accurate logo and lettering, no new animals or morphing."
+              prompt="Cinematic 16:9 slow camera push toward a Bengal tiger overlooking Cincinnati at sunset. The tiger breathes and blinks; river reflections shimmer and smoke drifts. Preserve the original image and lettering."
               ;;
             "Cleveland Browns")
               prompt="Epic cinematic 16:9 Cleveland Browns CGI. Preserve the furious bulldog with its metal spiked collar and the wooden DAWG POUND fence. The bulldog snarls, chest rises, head subtly lunges toward camera while thick white and orange paint visibly drips downward from the DAWG POUND letters along the wood planks. Low camera push, sparks and orange stadium light flicker. Keep text legible, no added dogs or distorted anatomy."
@@ -93,7 +93,22 @@ jobs:
               ;;
           esac
           export INPUT_PROMPT="$prompt"
-          python scripts/generate_wan_clip.py
+          if [ "$SELECTED_TEAM" = "Cincinnati Bengals" ]; then
+            export INPUT_DURATION=3.0
+            for attempt in 1 2 3; do
+              echo "Bengals render attempt $attempt of 3"
+              if python scripts/generate_wan_clip.py; then
+                exit 0
+              fi
+              if [ "$attempt" -lt 3 ]; then
+                echo "Upstream render failed; waiting before retry..."
+                sleep 25
+              fi
+            done
+            exit 1
+          else
+            python scripts/generate_wan_clip.py
+          fi
       - name: Upload team CGI MP4 or status
         if: ${{ (inputs.teams == 'All teams' || matrix.id == 'bengals') && always() }}
         uses: actions/upload-artifact@v4
