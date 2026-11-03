@@ -195,6 +195,18 @@ jobs:
             "Tampa Bay Buccaneers")
               prompt="Epic cinematic 16:9 Tampa Bay Buccaneers CGI. Preserve the massive pirate ship with black-and-red sails, Buccaneers skull-and-swords flags, gilded skull figurehead, lanterns, churning ocean and sunset coastal fort. The ship surges forward through rough waves as white spray crashes over the bow, sails and flags billow and warm lanterns flicker. Dynamic low camera tracking beside the hull. Keep the Buccaneers logos, ship geometry and skull figurehead intact; no added vessels or text."
               ;;
+            "Detroit Lions")
+              prompt="Cinematic Detroit Lions scene. The lion shifts behind the metal cage bars, blue highlights shimmer across its mane, and cool mist moves through the industrial room. Keep the lock, cage and Lions insignia consistent."
+              ;;
+            "Chicago Bears")
+              prompt="Cinematic Chicago Bears scene. The snowy grizzly lifts its head in a Chicago blizzard while wind pushes snow across the lens and warm city lights reflect on the icy street. Preserve the theater sign and team banner."
+              ;;
+            "Green Bay Packers")
+              prompt="Cinematic Green Bay Packers cheesehead factory. The industrial stamping press rises as triangular yellow cheesehead hats move forward along the conveyor. Steam drifts in warm factory light. Preserve the G emblems and machinery."
+              ;;
+            "Minnesota Vikings")
+              prompt="Cinematic Minnesota Vikings longship crossing a partially frozen sea. Rowers move their oars together as the boat glides between ice floes, water splashes at the bow, and the purple sail billows in the wind. Preserve the Viking emblem and ship."
+              ;;
             "New York Jets")
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
               ;;
