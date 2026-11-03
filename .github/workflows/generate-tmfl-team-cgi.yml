@@ -11,6 +11,7 @@ on:
           - All teams
           - Cincinnati Bengals only
           - AFC South only
+          - AFC West only
       scene_duration:
         description: Clip duration in seconds (0.5 to 4.5)
         required: true
@@ -23,7 +24,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 14
       matrix:
         include:
           - team: Buffalo Bills
@@ -56,23 +57,35 @@ jobs:
           - team: Jacksonville Jaguars
             file: assets/jags.png
             id: jaguars
+          - team: Denver Broncos
+            file: assets/broncos.png
+            id: broncos
+          - team: Kansas City Chiefs
+            file: assets/chiefs.png
+            id: chiefs
+          - team: Las Vegas Raiders
+            file: assets/raiders.png
+            id: raiders
+          - team: Los Angeles Chargers
+            file: assets/chargers.png
+            id: chargers
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) }}
       - uses: actions/setup-python@v5
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) }}
         with:
           python-version: '3.11'
       - name: Install dependencies
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) }}
         run: |
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
       - name: Animate team CGI
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) }}
         env:
           SELECTED_TEAM: ${{ matrix.team }}
           INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/${{ matrix.file }}
@@ -107,6 +120,18 @@ jobs:
             "Jacksonville Jaguars")
               prompt="Cinematic 16:9 Jacksonville Jaguars CGI. Preserve the source image of the dark flooded research corridor with mysterious teal jaguar eyes and damaged glass. Camera tracks inches above the water; small ripples spread toward camera, lights flicker and the shadow of a jaguar passes across the far wall. Suspenseful atmospheric movement, no giant mascot, no added text or distorted geometry."
               ;;
+            "Denver Broncos")
+              prompt="Epic cinematic 16:9 Denver Broncos CGI. Preserve original snowy Rocky Mountain herd artwork and the Broncos logo. A whole herd of white-coated horses with orange manes and tails gallops powerfully across the snow-covered slope, hooves kicking up swirling snow, orange manes whipping in alpine wind. Dynamic low tracking camera follows herd. Keep horses anatomically natural, preserve logo, no words added."
+              ;;
+            "Kansas City Chiefs")
+              prompt="Cinematic 16:9 Kansas City Chiefs CGI. Preserve the uploaded image of a respectful historical Plains council gathered by a campfire among tipis and the Chiefs KC arrowhead logo. Warm flames dance, embers drift upward, tipi canvas shifts gently in evening breeze, subtle camera dolly through the scene. Keep people stable and natural, no invented rituals, no logo deformation."
+              ;;
+            "Las Vegas Raiders")
+              prompt="Cinematic black-white-silver Las Vegas Raiders CGI. Preserve the shield with the RAIDERS wordmark at its top, armored raider, distant marching figures, flag and moonlit Las Vegas skyline. Slow dramatic camera sweep over jagged rocks as the cape and banner billow, silver moonlight sweeps across armor and clouds roll. No combat, no extra weapons, preserve readable RAIDERS lettering."
+              ;;
+            "Los Angeles Chargers")
+              prompt="Epic cinematic 16:9 Los Angeles Chargers coastal storm CGI. Preserve the large yellow and blue lightning bolt logo, lighthouse, cliffs, palm trees and sunset ocean. Huge ocean waves crash into the cliffs, throwing white spray upward; vivid electric-blue lightning flashes and strikes in the sky behind the bolt logo, briefly lighting the entire coastline. Lighthouse beam sweeps through rain and sea mist, dynamic cinematic camera. Keep the logo intact and legible."
+              ;;
             "New York Jets")
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
               ;;
@@ -129,7 +154,7 @@ jobs:
             python scripts/generate_wan_clip.py
           fi
       - name: Upload team CGI MP4 or status
-        if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars'))) && always() }}
+        if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers'))) && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: TMFL-${{ matrix.id }}-CGI
