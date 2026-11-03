@@ -1,0 +1,41 @@
+name: Generate Buffalo Bills Frozen Stampede
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.0'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate CGI
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/bills.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Epic cinematic 16:9 image-to-video sequence. Preserve the Buffalo Bills source composition and team branding. The spectral icy buffalo shifts forward through a fierce blizzard, snow and frost swirling in layered depth, stadium lights pulsing through mist. Slow low-angle camera push with immense scale and subtle parallax. Do not morph the helmet, logos or scenery; no additional characters.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-AFC-East-bills-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
