@@ -1,0 +1,41 @@
+name: Generate Packers Bears Thunderbirds Flyover
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '3.5'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate Packers Bears Thunderbirds flyover
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/0d9c3c8e-9f19-4816-97af-5e8fb6cde6c9.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Single continuous cinematic 16:9 nighttime shot inside the exact handmade cardboard TeenyMates Standing Board Stadium depicted in the source image. Five Green Bay Packers players wearing exactly #4 #8 #10 #33 #92 and five Chicago Bears wearing exactly #1 #2 #18 #34 #50 stand stationary on the field, all heads tilted up following the USAF Thunderbirds flying across the night sky. Jets soar overhead with flowing smoke trails; subtle camera tilt upward, dramatic stadium floodlights, moon and moving clouds. Preserve the exact stadium layout, each team helmet logo, each player jersey number, player count and identity. Do not add, remove, duplicate, substitute or move players into gameplay. Do not change their jerseys or stadium. No marching, running, tackling, or line of scrimmage.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Packers-Bears-Thunderbirds-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
