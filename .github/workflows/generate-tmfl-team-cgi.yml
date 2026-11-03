@@ -13,6 +13,7 @@ on:
           - AFC South only
           - AFC West only
           - NFC East only
+          - NFC South only
       scene_duration:
         description: Clip duration in seconds (0.5 to 4.5)
         required: true
@@ -25,7 +26,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 18
+      max-parallel: 22
       matrix:
         include:
           - team: Buffalo Bills
@@ -82,23 +83,35 @@ jobs:
           - team: Washington Commanders
             file: assets/commanders.png
             id: commanders
+          - team: Atlanta Falcons
+            file: assets/falcons.png
+            id: falcons
+          - team: Carolina Panthers
+            file: assets/panthers.png
+            id: panthers
+          - team: New Orleans Saints
+            file: assets/saints.png
+            id: saints
+          - team: Tampa Bay Buccaneers
+            file: assets/bucs.png
+            id: buccaneers
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers')) }}
       - uses: actions/setup-python@v5
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers')) }}
         with:
           python-version: '3.11'
       - name: Install dependencies
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers')) }}
         run: |
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
       - name: Animate team CGI
-        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers')) }}
         env:
           SELECTED_TEAM: ${{ matrix.team }}
           INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/${{ matrix.file }}
@@ -157,6 +170,18 @@ jobs:
             "Washington Commanders")
               prompt="Cinematic 16:9 Top Gun-style Washington Commanders briefing room CGI. Preserve the commander in burgundy flight suit at the center, surrounding seated pilots, burgundy-and-gold W helmet, mission folder and illuminated Washington map. Commander leans forward and gestures emphatically to the pilots; one pilot subtly turns to listen. Low dramatic camera push toward the commander, soft screen glow and reflections flicker. Preserve faces, hands, W insignia and text; no new objects, no combat."
               ;;
+            "Atlanta Falcons")
+              prompt="Cinematic 16:9 Atlanta Falcons CGI. Preserve the source image of a black and crimson peregrine falcon diving head-on through thick vapor clouds. The falcon hurtles toward the camera, wings tucked, while white condensation streams around its shoulders and feathers, clouds rush past in layered depth, and red light pulses subtly through the mist. Strong forward speed, natural bird anatomy, no additional birds, no logo or text added."
+              ;;
+            "Carolina Panthers")
+              prompt="Cinematic 16:9 Carolina Panthers CGI. Preserve the source image of the black panther lunging from a moonlit blue forest canopy toward the viewer. Animate a short powerful forward pounce with subtle forepaw movement, rippling fur and leaves scattering around the cat. Moonlight glints in its icy blue eyes; dynamic camera pullback and atmospheric mist. Preserve feline anatomy, no extra limbs, no additional animals or text."
+              ;;
+            "New Orleans Saints")
+              prompt="Cinematic 16:9 New Orleans Saints CGI. Preserve the ornate black-and-gold pope-like ceremonial figure with the Saints fleur-de-lis on his mitre, cross staff, French Quarter buildings, lanterns, flags and brass musicians. The figure strides forward with dignity as his embroidered cloak billows and the gold cross staff catches lantern light. Gentle camera tracking, soft drifting street fog and subtle brass band movement. Keep faces, insignias, and architecture consistent; no added text."
+              ;;
+            "Tampa Bay Buccaneers")
+              prompt="Epic cinematic 16:9 Tampa Bay Buccaneers CGI. Preserve the massive pirate ship with black-and-red sails, Buccaneers skull-and-swords flags, gilded skull figurehead, lanterns, churning ocean and sunset coastal fort. The ship surges forward through rough waves as white spray crashes over the bow, sails and flags billow and warm lanterns flicker. Dynamic low camera tracking beside the hull. Keep the Buccaneers logos, ship geometry and skull figurehead intact; no added vessels or text."
+              ;;
             "New York Jets")
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
               ;;
@@ -179,7 +204,7 @@ jobs:
             python scripts/generate_wan_clip.py
           fi
       - name: Upload team CGI MP4 or status
-        if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders'))) && always() }}
+        if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers'))) && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: TMFL-${{ matrix.id }}-CGI
