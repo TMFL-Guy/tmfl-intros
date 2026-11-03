@@ -1,0 +1,41 @@
+name: Generate New England Patriots Midnight Revolution
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.0'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate CGI
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/pats.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'Epic cinematic 16:9 colonial battlefield image-to-video sequence. Preserve the Patriots flags, fort, cannon, lantern, and ghostly silhouettes from the source image. The camera creeps slowly past the lantern and cannon toward the distant fort, fog rolls over the ground, banners flutter, torches flicker, and faint silhouettes emerge through mist. No combat, no weapon discharge, no extra figures, no logo distortion.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-AFC-East-patriots-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
