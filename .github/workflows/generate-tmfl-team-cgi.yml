@@ -10,6 +10,7 @@ on:
         options:
           - All teams
           - Cincinnati Bengals only
+          - AFC South only
       scene_duration:
         description: Clip duration in seconds (0.5 to 4.5)
         required: true
@@ -22,7 +23,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 7
+      max-parallel: 10
       matrix:
         include:
           - team: Buffalo Bills
@@ -46,23 +47,32 @@ jobs:
           - team: Pittsburgh Steelers
             file: assets/steelers.png
             id: steelers
+          - team: Houston Texans
+            file: assets/texans.png
+            id: texans
+          - team: Indianapolis Colts
+            file: assets/colts.png
+            id: colts
+          - team: Jacksonville Jaguars
+            file: assets/jags.png
+            id: jaguars
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        if: ${{ inputs.teams == 'All teams' || matrix.id == 'bengals' }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
       - uses: actions/setup-python@v5
-        if: ${{ inputs.teams == 'All teams' || matrix.id == 'bengals' }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
         with:
           python-version: '3.11'
       - name: Install dependencies
-        if: ${{ inputs.teams == 'All teams' || matrix.id == 'bengals' }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
         run: |
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
       - name: Animate team CGI
-        if: ${{ inputs.teams == 'All teams' || matrix.id == 'bengals' }}
+        if: ${{ inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) }}
         env:
           SELECTED_TEAM: ${{ matrix.team }}
           INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/${{ matrix.file }}
@@ -88,6 +98,15 @@ jobs:
             "Pittsburgh Steelers")
               prompt="Epic cinematic 16:9 Pittsburgh Steelers CGI. Preserve Steelers helmet in foreground, Pittsburgh skyline, yellow bridges, industrial steel beams and metallic STEELERS lettering. Camera glides slowly past the rain-speckled helmet; hot steel sparks fall from the overhead girders, golden light pulses across wet rivets, reflections shimmer in the river. Keep logos and typography unchanged; no new players or helmets."
               ;;
+            "Houston Texans")
+              prompt="Cinematic 16:9 Houston Texans CGI. Preserve the uploaded source artwork, especially the Texans bull with the team logo forming its face and the stadium-free background. Bull shifts its head and exhales a short plume of vapor; subtle dust and dramatic directional light sweep across the logo. Slow orbiting camera with strong depth. No stadium, no new animals, no morphing or logo distortion."
+              ;;
+            "Indianapolis Colts")
+              prompt="Cinematic 16:9 Indianapolis Colts CGI. Preserve the actual source scene: rain-darkened stadium tunnel, horseshoe on concrete wall, Colts helmet and gear case on the right, distant stadium lights. Ground-level camera creeps forward through the tunnel toward the glowing stadium entrance. Water droplets roll down the helmet, reflections ripple across the floor and distant lights flicker softly. No horse appears. No new objects or typography changes."
+              ;;
+            "Jacksonville Jaguars")
+              prompt="Cinematic 16:9 Jacksonville Jaguars CGI. Preserve the source image of the dark flooded research corridor with mysterious teal jaguar eyes and damaged glass. Camera tracks inches above the water; small ripples spread toward camera, lights flicker and the shadow of a jaguar passes across the far wall. Suspenseful atmospheric movement, no giant mascot, no added text or distorted geometry."
+              ;;
             "New York Jets")
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
               ;;
@@ -110,7 +129,7 @@ jobs:
             python scripts/generate_wan_clip.py
           fi
       - name: Upload team CGI MP4 or status
-        if: ${{ (inputs.teams == 'All teams' || matrix.id == 'bengals') && always() }}
+        if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars'))) && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: TMFL-${{ matrix.id }}-CGI
