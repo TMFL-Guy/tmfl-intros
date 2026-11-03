@@ -1,0 +1,41 @@
+name: Generate Vikings Lions Juke
+on:
+  workflow_dispatch:
+    inputs:
+      scene_duration:
+        description: Clip duration in seconds (0.5 to 4.5)
+        required: true
+        default: '4.0'
+        type: string
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install requests pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Animate Vikings Lions juke
+        env:
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/e11b533a-a9fc-40cc-968d-0d4a853dc86f.png
+          INPUT_DURATION: ${{ inputs.scene_duration }}
+          INPUT_PROMPT: 'One continuous cinematic 16:9 nighttime 1v1 TMFL football action shot. Minnesota Vikings Justin Jefferson number 18 in purple carries the football tucked securely and plants his foot for an explosive lateral juke, evading Detroit Lions Aidan Hutchinson number 97 in a silver helmet and white jersey as the defender lunges and misses. Show believable directional momentum, kicked-up turf, subtle slow-motion acceleration and a low tracking camera. Maintain exactly these two players and no other players on the field. No passing, no throwing, no catches. Preserve accurate helmet logos, jersey numbers, miniature toy figures, and the exact handmade cardboard TeenyMates Standing Board Stadium from the source image. Keep motion smooth, dramatic and physically coherent.'
+        run: python scripts/generate_wan_clip.py
+      - name: Upload CGI MP4 or status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMFL-Vikings-Lions-Juke-CGI
+          path: |
+            output/*.mp4
+            output/status.txt
+          if-no-files-found: warn
+          retention-days: 7
