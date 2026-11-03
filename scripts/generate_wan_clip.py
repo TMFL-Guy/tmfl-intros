@@ -146,7 +146,13 @@ def main():
         output.write_bytes(r.content)
         import subprocess
         landscape = OUT / "tmfl-stadium-awakens-landscape.mp4"
-        subprocess.run(["ffmpeg","-y","-i",str(output),"-vf","scale=832:468:force_original_aspect_ratio=decrease,pad=832:468:(ow-iw)/2:(oh-ih)/2,setsar=1","-an","-c:v","libx264","-pix_fmt","yuv420p",str(landscape)],check=True)
+        vf = "scale=832:468:force_original_aspect_ratio=decrease,pad=832:468:(ow-iw)/2:(oh-ih)/2,setsar=1"
+        if os.environ.get("HALLWAY_TRANSITION") == "1":
+            # Blackout is applied in post, not left to the video model.
+            # Fade for 0.2s, then guarantee pure black for the final 0.1s.
+            vf += f",fade=t=out:st={max(0, duration-0.30):.3f}:d=0.20"
+            vf += f",drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='gte(t,{max(0, duration-0.10):.3f})'"
+        subprocess.run(["ffmpeg","-y","-i",str(output),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(landscape)],check=True)
         output.unlink()
         output = landscape
         (OUT / "status.txt").write_text(f"SUCCESS: {output.name} ({len(r.content)} bytes)\n")
