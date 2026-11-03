@@ -2,6 +2,14 @@ name: TMFL Team CGI Generator
 on:
   workflow_dispatch:
     inputs:
+      teams:
+        description: Which teams to render
+        required: true
+        type: choice
+        default: All teams
+        options:
+          - All teams
+          - Cincinnati Bengals only
       scene_duration:
         description: Clip duration in seconds (0.5 to 4.5)
         required: true
@@ -10,6 +18,7 @@ on:
 jobs:
   render:
     name: Animate ${{ matrix.team }}
+    if: ${{ inputs.teams == 'All teams' || matrix.id == 'bengals' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
