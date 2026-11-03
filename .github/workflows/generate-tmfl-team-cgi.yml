@@ -18,25 +18,25 @@ jobs:
       matrix:
         include:
           - team: Buffalo Bills
-            file: bills.png
+            file: assets/bills.png
             id: bills
           - team: Miami Dolphins
-            file: dolphins.png
+            file: assets/dolphins.png
             id: dolphins
           - team: New England Patriots
-            file: pats.png
+            file: assets/pats.png
             id: patriots
           - team: New York Jets
-            file: jets.png
+            file: assets/jets.png
             id: jets
           - team: Cincinnati Bengals
-            file: ../bengals.png
+            file: bengals.png
             id: bengals
           - team: Cleveland Browns
-            file: browns.png
+            file: assets/browns.png
             id: browns
           - team: Pittsburgh Steelers
-            file: steelers.png
+            file: assets/steelers.png
             id: steelers
     permissions:
       contents: read
@@ -53,7 +53,7 @@ jobs:
       - name: Animate team CGI
         env:
           SELECTED_TEAM: ${{ matrix.team }}
-          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/${{ matrix.file }}
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/${{ matrix.file }}
           INPUT_DURATION: ${{ inputs.scene_duration }}
         shell: bash
         run: |
