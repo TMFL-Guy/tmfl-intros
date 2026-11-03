@@ -2,15 +2,6 @@ name: TMFL Team CGI Generator
 on:
   workflow_dispatch:
     inputs:
-      team:
-        description: Select the TMFL team to animate
-        required: true
-        type: choice
-        options:
-          - Buffalo Bills
-          - Miami Dolphins
-          - New England Patriots
-          - New York Jets
       scene_duration:
         description: Clip duration in seconds (0.5 to 4.5)
         required: true
@@ -18,8 +9,26 @@ on:
         type: string
 jobs:
   render:
+    name: Animate ${{ matrix.team }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - team: Buffalo Bills
+            file: bills.png
+            id: bills
+          - team: Miami Dolphins
+            file: dolphins.png
+            id: dolphins
+          - team: New England Patriots
+            file: pats.png
+            id: patriots
+          - team: New York Jets
+            file: jets.png
+            id: jets
     permissions:
       contents: read
     steps:
@@ -32,42 +41,34 @@ jobs:
           python -m pip install requests pillow
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-      - name: Animate selected team
+      - name: Animate team CGI
         env:
-          SELECTED_TEAM: ${{ inputs.team }}
+          SELECTED_TEAM: ${{ matrix.team }}
+          INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/${{ matrix.file }}
           INPUT_DURATION: ${{ inputs.scene_duration }}
         shell: bash
         run: |
           case "$SELECTED_TEAM" in
             "Buffalo Bills")
-              file="bills.png"
               prompt="Epic cinematic 16:9 Buffalo Bills CGI. Preserve the source image. The spectral icy buffalo shifts through a fierce blizzard, snow and frost swirling in layered depth, stadium lights pulsing through mist. Slow low-angle camera push, subtle parallax. Preserve logos, helmet, and scene geometry."
               ;;
             "Miami Dolphins")
-              file="dolphins.png"
               prompt="Epic cinematic 16:9 Miami Dolphins underwater CGI. Preserve the submerged stadium. Slow underwater tracking shot, suspended particles drift, fish move in distance, rays ripple, Dolphins banners sway and bubbles rise past the sunken helmet. No giant dolphin. Preserve logos and architecture."
               ;;
             "New England Patriots")
-              file="pats.png"
               prompt="Epic cinematic 16:9 Patriots colonial battlefield CGI. Preserve flags, fort, cannon, lantern and ghostly silhouettes. Camera creeps past the lantern toward the fort, fog rolls over ground, banners flutter, torches flicker. No combat or weapon discharge. Preserve logos."
               ;;
             "New York Jets")
-              file="jets.png"
               prompt="Epic cinematic 16:9 Jets F-16 takeoff CGI. Preserve exactly one correctly shaped single-engine single-tail F-16 with Jets markings and the original skyline. Low tracking camera follows acceleration on a wet runway, one afterburner glows, heat haze and runway reflections; aircraft gently lifts off. No additional engines, wings, tails, aircraft, or logo distortion."
               ;;
-            *)
-              echo "Unsupported team: $SELECTED_TEAM"
-              exit 1
-              ;;
           esac
-          export INPUT_IMAGE_URL="https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/assets/$file"
           export INPUT_PROMPT="$prompt"
           python scripts/generate_wan_clip.py
-      - name: Upload CGI MP4 or status
+      - name: Upload team CGI MP4 or status
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: TMFL-Team-CGI
+          name: TMFL-${{ matrix.id }}-CGI
           path: |
             output/*.mp4
             output/status.txt
