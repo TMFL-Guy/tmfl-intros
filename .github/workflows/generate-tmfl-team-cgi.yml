@@ -146,6 +146,18 @@ jobs:
         shell: bash
         run: |
           case "$SELECTED_TEAM" in
+            "Arizona Cardinals")
+              prompt="Cinematic 16:9 Arizona desert at sunset. Preserve the giant red cardinal perched on a desert rock. Its wings shift gently and feathers ripple in the wind, dust drifts past saguaro cacti, warm sunlight moves across the rock. Slow dramatic camera push. Preserve the Cardinals emblem and original composition."
+              ;;
+            "Los Angeles Rams")
+              prompt="Cinematic 16:9 bighorn ram on a rocky ledge overlooking Los Angeles at golden sunset. The ram slowly turns its head and its fur stirs in the breeze, flags ripple and sunlight gleams along its curved horns. Subtle camera rise. Preserve the Rams symbols, Hollywood sign, and cityscape."
+              ;;
+            "San Francisco 49ers")
+              prompt="Cinematic 16:9 historic California gold mine. A gold-filled ore cart rolls gently forward on the rails, lantern flames flicker against timber supports, gold nuggets sparkle and fine dust floats in warm shafts of light. Slow tracking camera movement. Preserve the 49ers branding and distant Golden Gate Bridge."
+              ;;
+            "Seattle Seahawks")
+              prompt="Cinematic 16:9 blue and green hawk perched on a mossy cliff above Seattle. Its wings move subtly and feathers flutter in the storm breeze, light rain drifts across the scene, and clouds part around the Space Needle and Mount Rainier. Slow sweeping camera motion. Preserve the Seahawks emblem and original composition."
+              ;;
             "Buffalo Bills")
               prompt="Epic cinematic 16:9 Buffalo Bills CGI. Preserve the source image. The spectral icy buffalo shifts through a fierce blizzard, snow and frost swirling in layered depth, stadium lights pulsing through mist. Slow low-angle camera push, subtle parallax. Preserve logos, helmet, and scene geometry."
               ;;
