@@ -160,6 +160,7 @@ jobs:
           SELECTED_TEAM: ${{ matrix.team }}
           INPUT_IMAGE_URL: https://raw.githubusercontent.com/TMFL-Guy/tmfl-intros/main/${{ matrix.file }}
           INPUT_DURATION: ${{ inputs.scene_duration }}
+          HALLWAY_TRANSITION: ${{ contains(matrix.id, 'hallway_') || matrix.id == 'subway_wall' }}
         shell: bash
         run: |
           case "$SELECTED_TEAM" in
