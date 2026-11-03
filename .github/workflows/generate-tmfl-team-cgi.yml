@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       fail-fast: false
-      max-parallel: 22
+      max-parallel: 2
       matrix:
         include:
           - team: Buffalo Bills
@@ -187,22 +187,21 @@ jobs:
               ;;
           esac
           export INPUT_PROMPT="$prompt"
-          if [ "$SELECTED_TEAM" = "Cincinnati Bengals" ]; then
-            export INPUT_DURATION=3.0
-            for attempt in 1 2 3; do
-              echo "Bengals render attempt $attempt of 3"
-              if python scripts/generate_wan_clip.py; then
-                exit 0
-              fi
-              if [ "$attempt" -lt 3 ]; then
-                echo "Upstream render failed; waiting before retry..."
-                sleep 25
-              fi
-            done
-            exit 1
-          else
-            python scripts/generate_wan_clip.py
-          fi
+          # Public Wan GPU capacity is shared and occasionally rejects queued requests.
+          # Retry every team instead of only Cincinnati, with increasing delays.
+          for attempt in 1 2 3 4; do
+            echo "Render attempt $attempt of 4 for $SELECTED_TEAM"
+            if python scripts/generate_wan_clip.py; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 4 ]; then
+              delay=$((attempt * 30))
+              echo "Video generation failed; retrying after ${delay}s..."
+              sleep "$delay"
+            fi
+          done
+          echo "All 4 generation attempts failed for $SELECTED_TEAM"
+          exit 1
       - name: Upload team CGI MP4 or status
         if: ${{ (inputs.teams == 'All teams' || (inputs.teams == 'Cincinnati Bengals only' && matrix.id == 'bengals') || (inputs.teams == 'AFC South only' && (matrix.id == 'texans' || matrix.id == 'colts' || matrix.id == 'jaguars')) || (inputs.teams == 'AFC West only' && (matrix.id == 'broncos' || matrix.id == 'chiefs' || matrix.id == 'raiders' || matrix.id == 'chargers')) || (inputs.teams == 'NFC East only' && (matrix.id == 'cowboys' || matrix.id == 'giants' || matrix.id == 'eagles' || matrix.id == 'commanders')) || (inputs.teams == 'NFC South only' && (matrix.id == 'falcons' || matrix.id == 'panthers' || matrix.id == 'saints' || matrix.id == 'buccaneers'))) && always() }}
         uses: actions/upload-artifact@v4
